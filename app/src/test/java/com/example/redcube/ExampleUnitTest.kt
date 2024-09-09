@@ -1,4 +1,4 @@
-package com.example.redcube
+package red.tetrakube.redcube
 
 import org.junit.Test
 
