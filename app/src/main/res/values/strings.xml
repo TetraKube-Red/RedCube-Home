@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">RedCube Home</string>
+    <string name="logo_transition_id">logo_transition_image</string>
+    <string name="title_transition_id">title_transition</string>
 </resources>

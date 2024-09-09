@@ -1,38 +1,31 @@
 package red.tetrakube.redcube
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import red.tetrakube.redcube.ui.theme.RedCubeHomeTheme
+import androidx.core.animation.doOnEnd
+import red.tetrakube.redcube.ui.shell.RedCubeShell
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        splashScreen.setOnExitAnimationListener { splashScreenView ->
+            val fadeOut = ObjectAnimator.ofFloat(
+                splashScreenView,
+                View.ALPHA,
+                1f,
+                0f
+            )
+            fadeOut.duration = 600L
+            fadeOut.doOnEnd { splashScreenView.remove() }
+            fadeOut.start()
+        }
         setContent {
-            RedCubeHomeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            RedCubeShell()
         }
     }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
 }
