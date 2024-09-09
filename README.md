@@ -25,12 +25,12 @@ Prerequisites
 Clone the Repository:
 
 ```bash
-git clone https://github.com/yourusername/red-tetracube-redcube.git
+git clone https://github.com/TetraKube-Red/RedCube-Home.git
 ```
 
 # License
 
-This project is licensed under the MIT License. See the LICENSE.md file for details.
+This project is licensed under the MIT License. See the [LICENSE.md](https://github.com/TetraKube-Red/RedCube-Home?tab=License-1-ov-file) file for details.
 Contact
 
 For any questions or feedback, please contact:
