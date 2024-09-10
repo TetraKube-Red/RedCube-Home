@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization.plugin)
+    alias(libs.plugins.realm.plugin)
 }
 
 android {
@@ -51,6 +52,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.realm)
+    implementation(libs.realm.coroutines)
+
     implementation(libs.accompanist.permissions)
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)

@@ -7,12 +7,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import red.tetrakube.redcube.navigation.Routes
 import red.tetrakube.redcube.navigation.graphs.addWelcomeGraph
 import red.tetrakube.redcube.ui.splash.SplashScreen
+import red.tetrakube.redcube.ui.splash.SplashViewModel
 import red.tetrakube.redcube.ui.theme.RedCubeHomeTheme
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -36,6 +39,7 @@ fun RedCubeShell() {
                         SplashScreen(
                             modifier = Modifier.padding(innerPadding),
                             navController = navController,
+                            viewModel(factory = SplashViewModel.Factory),
                             this@SharedTransitionLayout,
                             this@composable
                         )

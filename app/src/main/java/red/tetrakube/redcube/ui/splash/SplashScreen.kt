@@ -32,24 +32,33 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 import red.tetrakube.redcube.R
 import red.tetrakube.redcube.navigation.Routes
+import red.tetrakube.redcube.ui.splash.model.SplashScreenState
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SplashScreen(
     modifier: Modifier,
     navController: NavHostController,
+    viewModel: SplashViewModel,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope
 ) {
     LaunchedEffect(Unit) {
-        delay(2000)
-        navController.navigate(route = Routes.Onboarding) {
-            launchSingleTop = true
-            popUpTo<Routes.Splash> {
-                inclusive = true
+        viewModel.loadActiveHub()
+    }
+
+    val screenState = viewModel.screenState.value
+    if (screenState is SplashScreenState.Finished) {
+        if (screenState.activeHub == null) {
+            navController.navigate(route = Routes.Onboarding) {
+                launchSingleTop = true
+                popUpTo<Routes.Splash> {
+                    inclusive = true
+                }
             }
         }
     }
+
     val rainbowColorsBrush = remember {
         Brush.sweepGradient(
             listOf(

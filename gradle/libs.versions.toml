@@ -16,6 +16,8 @@ ktorVersion = "2.3.12"
 navigationCompose = "2.8.0"
 kotlinSerialization = "1.8.21"
 firebaseBom = "33.2.0"
+realm = "1.16.0"
+realm-coroutines = "1.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -48,9 +50,12 @@ ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.re
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorVersion" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging-ktx" }
+realm = { module = "io.realm.kotlin:library-base", version.ref = "realm" }
+realm-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "realm-coroutines" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization-plugin = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization" }
+realm-plugin = { id = "io.realm.kotlin", version.ref = "realm" }
 
