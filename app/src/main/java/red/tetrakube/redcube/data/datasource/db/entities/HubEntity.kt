@@ -13,7 +13,7 @@ class HubEntity : RealmObject {
     var slug: String = ""
     var name: String = ""
     var active: Boolean = false
-    var connectivity: HubConnectivityEmbedded = HubConnectivityEmbedded()
+    var connectivity: HubConnectivityEmbedded? = null
     var rooms: RealmList<RoomEmbedded> = realmListOf()
 
 }

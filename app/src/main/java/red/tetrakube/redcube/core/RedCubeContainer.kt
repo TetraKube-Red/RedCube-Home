@@ -1,12 +1,11 @@
 package red.tetrakube.redcube.core
 
-import android.content.Context
 import red.tetrakube.redcube.data.datasource.db.HubDataSource
 import red.tetrakube.redcube.data.datasource.db.RedCubeDatabase
 
-class RedCubeContainer(context: Context) {
+class RedCubeContainer {
 
-    private val redCubeDatabase = RedCubeDatabase()
+    private val redCubeDatabase by lazy { RedCubeDatabase() }
 
     val hubDataSource by lazy { HubDataSource(redCubeDatabase.db) }
 
