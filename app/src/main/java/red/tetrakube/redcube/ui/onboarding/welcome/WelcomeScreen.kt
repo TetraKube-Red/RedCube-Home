@@ -1,8 +1,5 @@
 package red.tetrakube.redcube.ui.onboarding.welcome
 
-import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -16,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -25,7 +23,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -33,13 +30,10 @@ import androidx.navigation.NavHostController
 import red.tetrakube.redcube.R
 import red.tetrakube.redcube.navigation.Routes
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun WelcomeScreen(
     modifier: Modifier = Modifier,
-    navController: NavHostController,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope
+    navController: NavHostController
 ) {
     val rainbowColorsBrush = remember {
         Brush.sweepGradient(
@@ -55,11 +49,13 @@ fun WelcomeScreen(
             )
         )
     }
-
-    with(sharedTransitionScope) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+    ) { innerPadding ->
         Column(
             modifier = modifier
                 .fillMaxSize()
+                .padding(innerPadding)
                 .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(32.dp)
@@ -68,10 +64,7 @@ fun WelcomeScreen(
                 "RedCube Home",
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.sharedElement(
-                    sharedTransitionScope.rememberSharedContentState(key = stringResource(R.string.title_transition_id)),
-                    animatedVisibilityScope = animatedContentScope
-                )
+                modifier = Modifier
             )
             Image(
                 painter = painterResource(R.drawable.welcome),
@@ -81,10 +74,6 @@ fun WelcomeScreen(
                     .border(
                         BorderStroke(3.dp, rainbowColorsBrush),
                         RoundedCornerShape(16.dp)
-                    )
-                    .sharedElement(
-                        sharedTransitionScope.rememberSharedContentState(key = stringResource(R.string.logo_transition_id)),
-                        animatedVisibilityScope = animatedContentScope
                     ),
                 contentDescription = ""
             )

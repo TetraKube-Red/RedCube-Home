@@ -1,8 +1,5 @@
 package red.tetrakube.redcube.ui.splash
 
-import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -16,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,22 +24,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import kotlinx.coroutines.delay
 import red.tetrakube.redcube.R
 import red.tetrakube.redcube.navigation.Routes
 import red.tetrakube.redcube.ui.splash.model.SplashScreenState
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SplashScreen(
     modifier: Modifier,
     navController: NavHostController,
-    viewModel: SplashViewModel,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope
+    viewModel: SplashViewModel
 ) {
     LaunchedEffect(Unit) {
         viewModel.loadActiveHub()
@@ -59,6 +52,11 @@ fun SplashScreen(
         }
     }
 
+    SplashScreenUI(modifier)
+}
+
+@Composable
+fun SplashScreenUI(modifier: Modifier) {
     val rainbowColorsBrush = remember {
         Brush.sweepGradient(
             listOf(
@@ -74,22 +72,22 @@ fun SplashScreen(
         )
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        with(sharedTransitionScope) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+    ) { innerPadding ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
             Text(
                 "RedCube Home",
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.sharedElement(
-                    sharedTransitionScope.rememberSharedContentState(key = stringResource(R.string.title_transition_id)),
-                    animatedVisibilityScope = animatedContentScope
-                )
+                modifier = Modifier
             )
             Spacer(modifier = Modifier.height(32.dp))
             Image(
@@ -100,15 +98,11 @@ fun SplashScreen(
                     .border(
                         BorderStroke(3.dp, rainbowColorsBrush),
                         RoundedCornerShape(16.dp)
-                    )
-                    .sharedElement(
-                        sharedTransitionScope.rememberSharedContentState(key = stringResource(R.string.logo_transition_id)),
-                        animatedVisibilityScope = animatedContentScope
                     ),
                 contentDescription = ""
             )
+            Spacer(modifier = Modifier.height(32.dp))
+            CircularProgressIndicator()
         }
-        Spacer(modifier = Modifier.height(32.dp))
-        CircularProgressIndicator()
     }
 }
