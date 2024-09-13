@@ -6,7 +6,14 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +24,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,23 +34,28 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.common.util.concurrent.ListenableFuture
 import red.tetrakube.redcube.R
 import red.tetrakube.redcube.domain.usecase.barcode.BarcodeAnalyzer
+import red.tetrakube.redcube.ui.onboarding.login.models.LoginScreenState
+import red.tetrakube.redcube.ui.onboarding.login.models.LoginTargetContent
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -52,6 +65,20 @@ fun LoginScreen(
     loginViewModel: LoginViewModel
 ) {
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
+    val loginScreenState = loginViewModel.loginScreenState
+    val targetContent = remember(cameraPermissionState.status, loginScreenState.value) {
+        derivedStateOf {
+            if (!cameraPermissionState.status.isGranted) {
+                LoginTargetContent.PERMISSION_CARD
+            } else if (cameraPermissionState.status.isGranted && loginScreenState.value is LoginScreenState.Neutral) {
+                LoginTargetContent.CAMERA_SCANNER
+            } else if (loginScreenState.value is LoginScreenState.Loading) {
+                LoginTargetContent.LOADER
+            } else {
+                LoginTargetContent.LOADER
+            }
+        }
+    }
 
     SideEffect {
         cameraPermissionState.run { launchPermissionRequest() }
@@ -59,13 +86,20 @@ fun LoginScreen(
 
     LoginScreenUI(
         modifier = modifier,
-        cameraPermission = cameraPermissionState.status
+        targetContent = targetContent,
+        cameraPermission = cameraPermissionState.status,
+        onQRCodeDetection = loginViewModel::handleHubEnrollment
     )
 }
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreenUI(modifier: Modifier, cameraPermission: PermissionStatus) {
+fun LoginScreenUI(
+    modifier: Modifier,
+    targetContent: State<LoginTargetContent>,
+    cameraPermission: PermissionStatus,
+    onQRCodeDetection: (String) -> Unit
+) {
     val density = LocalDensity.current
 
     Scaffold(
@@ -83,23 +117,57 @@ fun LoginScreenUI(modifier: Modifier, cameraPermission: PermissionStatus) {
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
         ) {
-            CardCameraPermission(cameraPermission)
-            /*if (cameraPermission.isGranted) {
-                val localContext = LocalContext.current
-                val lifecycleOwner = LocalLifecycleOwner.current
-                val cameraProviderFuture = remember {
-                    ProcessCameraProvider.getInstance(localContext)
-                }
-                CameraScreen(lifecycleOwner, cameraProviderFuture) {}
-            } else if (cameraPermission.shouldShowRationale) {
-                Text("Camera Permission permanently denied")
-            } else {
-                Text("No Camera Permission")
-            }*/
-
-
-
+            AnimatedVisibility(
+                visible = targetContent.value == LoginTargetContent.PERMISSION_CARD,
+                enter = slideInVertically {
+                    with(density) { -40.dp.roundToPx() }
+                } + expandVertically(
+                    expandFrom = Alignment.Top
+                ) + fadeIn(
+                    initialAlpha = 0.3f
+                ),
+                exit = slideOutVertically() + shrinkVertically() + fadeOut()
+            ) {
+                CardCameraPermission(cameraPermission)
+            }
+            AnimatedVisibility(
+                visible = targetContent.value == LoginTargetContent.CAMERA_SCANNER,
+                enter = slideInVertically {
+                    with(density) { -40.dp.roundToPx() }
+                } + expandVertically(
+                    expandFrom = Alignment.Top
+                ) + fadeIn(
+                    initialAlpha = 0.3f
+                ),
+                exit = slideOutVertically() + shrinkVertically() + fadeOut()
+            ) {
+                CameraScreen(onQRCodeDetection)
+            }
+            AnimatedVisibility(
+                visible = targetContent.value == LoginTargetContent.LOADER,
+                enter = slideInVertically {
+                    with(density) { -40.dp.roundToPx() }
+                } + expandVertically(
+                    expandFrom = Alignment.Top
+                ) + fadeIn(
+                    initialAlpha = 0.3f
+                ),
+                exit = slideOutVertically() + shrinkVertically() + fadeOut()
+            ) {
+                LoaderCard()
+            }
         }
+    }
+}
+
+@Composable
+fun LoaderCard() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CircularProgressIndicator()
     }
 }
 
@@ -107,11 +175,9 @@ fun LoginScreenUI(modifier: Modifier, cameraPermission: PermissionStatus) {
 @Composable
 fun CardCameraPermission(cameraPermission: PermissionStatus) {
     ElevatedCard(
-        colors = CardDefaults.elevatedCardColors().copy(containerColor = MaterialTheme.colorScheme.primaryContainer),
-        modifier = Modifier
-            .animateContentSize()
-            .fillMaxWidth()
-            .height(if (!cameraPermission.isGranted) 100.dp else 40.dp)
+        colors = CardDefaults.elevatedCardColors()
+            .copy(containerColor = MaterialTheme.colorScheme.primaryContainer),
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(Modifier.padding(8.dp)) {
             Row(
@@ -151,42 +217,53 @@ fun CardCameraPermission(cameraPermission: PermissionStatus) {
 
 @Composable
 fun CameraScreen(
-    lifecycleOwner: LifecycleOwner,
-    cameraProviderFuture: ListenableFuture<ProcessCameraProvider>,
     onQRCodeDetection: (String) -> Unit
 ) {
-    AndroidView(
-        modifier = Modifier.fillMaxSize(),
-        factory = { context ->
-            val previewView = PreviewView(context)
-            val preview = Preview.Builder().build()
-            val selector = CameraSelector.Builder()
-                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                .build()
+    val localContext = LocalContext.current
+    val cameraProviderFuture = remember {
+        ProcessCameraProvider.getInstance(localContext)
+    }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    ElevatedCard(
+        modifier = Modifier
+            .animateContentSize()
+            .fillMaxWidth()
+            .height(400.dp)
+    ) {
+        AndroidView(
+            modifier = Modifier
+                .fillMaxSize(),
+            factory = { context ->
+                val previewView = PreviewView(context)
+                val preview = Preview.Builder().build()
+                val selector = CameraSelector.Builder()
+                    .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                    .build()
 
-            preview.setSurfaceProvider(previewView.surfaceProvider)
+                preview.setSurfaceProvider(previewView.surfaceProvider)
 
-            val imageAnalysis = ImageAnalysis.Builder().build()
-            imageAnalysis.setAnalyzer(
-                ContextCompat.getMainExecutor(context),
-                BarcodeAnalyzer(onQRCodeDetection)
-            )
-
-            runCatching {
-                val cameraProvider = cameraProviderFuture.get()
-                cameraProvider.unbindAll()
-
-                cameraProvider.bindToLifecycle(
-                    lifecycleOwner,
-                    selector,
-                    preview,
-                    imageAnalysis
+                val imageAnalysis = ImageAnalysis.Builder().build()
+                imageAnalysis.setAnalyzer(
+                    ContextCompat.getMainExecutor(context),
+                    BarcodeAnalyzer(onQRCodeDetection)
                 )
-            }
-                .onFailure {
-                    Log.e("CAMERA", "Camera bind error ${it.localizedMessage}", it)
+
+                runCatching {
+                    val cameraProvider = cameraProviderFuture.get()
+                    cameraProvider.unbindAll()
+
+                    cameraProvider.bindToLifecycle(
+                        lifecycleOwner,
+                        selector,
+                        preview,
+                        imageAnalysis
+                    )
                 }
-            previewView
-        }
-    )
+                    .onFailure {
+                        Log.e("CAMERA", "Camera bind error ${it.localizedMessage}", it)
+                    }
+                previewView
+            }
+        )
+    }
 }

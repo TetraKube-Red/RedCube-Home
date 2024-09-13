@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -96,28 +97,31 @@ fun WelcomeScreen(
                 )
 
                 Row() {
-                    Image(
+                    Icon(
                         modifier = Modifier.padding(horizontal = 8.dp),
                         painter = painterResource(R.drawable.computer_24px),
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                     Text("First, generate a QR code using the TetraKube Platform CLI - see the TetraKube CLI component on GitHub")
                 }
 
                 Row() {
-                    Image(
+                    Icon(
                         modifier = Modifier.padding(horizontal = 8.dp),
                         painter = painterResource(R.drawable.qr_code_scanner_24px),
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                     Text("Once you have your QR code, just scan it with your phone’s camera")
                 }
 
                 Row() {
-                    Image(
+                    Icon(
                         modifier = Modifier.padding(horizontal = 8.dp),
                         painter = painterResource(R.drawable.play_circle_24px),
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                     Text("Let’s get your home management journey started!")
                 }
