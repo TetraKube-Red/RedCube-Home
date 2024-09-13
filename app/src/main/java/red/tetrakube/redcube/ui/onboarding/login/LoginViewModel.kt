@@ -9,6 +9,10 @@ import red.tetrakube.redcube.RedCubeApplication
 
 class LoginViewModel : ViewModel() {
 
+    fun handleHubEnrollment(qrContent: String) {
+
+    }
+
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
