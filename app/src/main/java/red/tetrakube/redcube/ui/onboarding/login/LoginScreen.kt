@@ -57,6 +57,7 @@ import red.tetrakube.redcube.R
 import red.tetrakube.redcube.domain.models.MinimalActiveHub
 import red.tetrakube.redcube.domain.models.UseCasesErrors
 import red.tetrakube.redcube.domain.usecase.barcode.BarcodeAnalyzer
+import red.tetrakube.redcube.navigation.Routes
 import red.tetrakube.redcube.ui.onboarding.login.models.LoginScreenState
 import red.tetrakube.redcube.ui.onboarding.login.models.LoginTargetContent
 
@@ -97,7 +98,15 @@ fun LoginScreen(
         cameraPermission = cameraPermissionState.status,
         loginScreenState = loginViewModel.loginScreenState.value,
         resetLoginStatus = loginViewModel::resetLoginStatus,
-        onQRCodeDetection = loginViewModel::handleHubEnrollment
+        onQRCodeDetection = loginViewModel::handleHubEnrollment,
+        onFlowFinished = {
+            navController.navigate(route = Routes.IoT) {
+                launchSingleTop = true
+                popUpTo<Routes.Splash> {
+                    inclusive = true
+                }
+            }
+        }
     )
 }
 
@@ -109,7 +118,8 @@ fun LoginScreenUI(
     cameraPermission: PermissionStatus,
     loginScreenState: LoginScreenState,
     resetLoginStatus: () -> Unit,
-    onQRCodeDetection: (String) -> Unit
+    onQRCodeDetection: (String) -> Unit,
+    onFlowFinished: () -> Unit
 ) {
     val density = LocalDensity.current
 
@@ -128,44 +138,51 @@ fun LoginScreenUI(
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
         ) {
-            AnimatedVisibility(
-                visible = targetContent.value == LoginTargetContent.PERMISSION_CARD,
-                enter = slideInVertically {
-                    with(density) { -40.dp.roundToPx() }
-                } + expandVertically(
-                    expandFrom = Alignment.Top
-                ) + fadeIn(
-                    initialAlpha = 0.3f
-                ),
-                exit = slideOutVertically() + shrinkVertically() + fadeOut()
-            ) {
-                CardCameraPermission(cameraPermission)
+            if (targetContent.value == LoginTargetContent.PERMISSION_CARD) {
+                AnimatedVisibility(
+                    visible = targetContent.value == LoginTargetContent.PERMISSION_CARD,
+                    enter = slideInVertically {
+                        with(density) { -40.dp.roundToPx() }
+                    } + expandVertically(
+                        expandFrom = Alignment.Top
+                    ) + fadeIn(
+                        initialAlpha = 0.3f
+                    ),
+                    exit = slideOutVertically() + shrinkVertically() + fadeOut()
+                ) {
+                    CardCameraPermission(cameraPermission)
+                }
             }
-            AnimatedVisibility(
-                visible = targetContent.value == LoginTargetContent.CAMERA_SCANNER,
-                enter = slideInVertically {
-                    with(density) { -40.dp.roundToPx() }
-                } + expandVertically(
-                    expandFrom = Alignment.Top
-                ) + fadeIn(
-                    initialAlpha = 0.3f
-                ),
-                exit = slideOutVertically() + shrinkVertically() + fadeOut()
-            ) {
-                CameraScreen(onQRCodeDetection)
+
+            if (targetContent.value == LoginTargetContent.CAMERA_SCANNER) {
+                AnimatedVisibility(
+                    visible = targetContent.value == LoginTargetContent.CAMERA_SCANNER,
+                    enter = slideInVertically {
+                        with(density) { -40.dp.roundToPx() }
+                    } + expandVertically(
+                        expandFrom = Alignment.Top
+                    ) + fadeIn(
+                        initialAlpha = 0.3f
+                    ),
+                    exit = slideOutVertically() + shrinkVertically() + fadeOut()
+                ) {
+                    CameraScreen(onQRCodeDetection)
+                }
             }
-            AnimatedVisibility(
-                visible = targetContent.value == LoginTargetContent.LOADER,
-                enter = slideInVertically {
-                    with(density) { -40.dp.roundToPx() }
-                } + expandVertically(
-                    expandFrom = Alignment.Top
-                ) + fadeIn(
-                    initialAlpha = 0.3f
-                ),
-                exit = slideOutVertically() + shrinkVertically() + fadeOut()
-            ) {
-                LoaderCard()
+            if (targetContent.value == LoginTargetContent.LOADER) {
+                AnimatedVisibility(
+                    visible = targetContent.value == LoginTargetContent.LOADER,
+                    enter = slideInVertically {
+                        with(density) { -40.dp.roundToPx() }
+                    } + expandVertically(
+                        expandFrom = Alignment.Top
+                    ) + fadeIn(
+                        initialAlpha = 0.3f
+                    ),
+                    exit = slideOutVertically() + shrinkVertically() + fadeOut()
+                ) {
+                    LoaderCard()
+                }
             }
             if (targetContent.value == LoginTargetContent.SUCCESS) {
                 AnimatedVisibility(
@@ -180,7 +197,7 @@ fun LoginScreenUI(
                     exit = slideOutVertically() + shrinkVertically() + fadeOut()
                 ) {
                     val minimalHubIfo = (loginScreenState as LoginScreenState.Finished).activeHub
-                    HubInfoViewerCard(minimalHubIfo)
+                    HubInfoViewerCard(minimalHubIfo, onFlowFinished)
                 }
             }
             if (targetContent.value == LoginTargetContent.ERROR) {
@@ -253,7 +270,7 @@ fun HubEnrollmentError(useCasesErrors: UseCasesErrors, resetLoginStatus: () -> U
 }
 
 @Composable
-fun HubInfoViewerCard(minimalHubIfo: MinimalActiveHub?) {
+fun HubInfoViewerCard(minimalHubIfo: MinimalActiveHub?, onFlowFinished: () -> Unit) {
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors()
             .copy(
@@ -290,6 +307,12 @@ fun HubInfoViewerCard(minimalHubIfo: MinimalActiveHub?) {
             Text(
                 "The hub ${minimalHubIfo?.name ?: "null"} is enrolled successfully"
             )
+            Spacer(Modifier.height(16.dp))
+            ElevatedButton(
+                onClick = onFlowFinished
+            ) {
+                Text("Use your hub")
+            }
         }
     }
 }

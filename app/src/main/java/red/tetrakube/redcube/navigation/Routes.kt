@@ -17,4 +17,10 @@ sealed class Routes {
     @Serializable
     data object Login: Routes()
 
+    @Serializable
+    data object Main: Routes()
+
+    @Serializable
+    data object IoT: Routes()
+
 }

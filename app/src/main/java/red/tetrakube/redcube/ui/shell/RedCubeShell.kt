@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import red.tetrakube.redcube.navigation.Routes
+import red.tetrakube.redcube.navigation.graphs.addMainGraph
 import red.tetrakube.redcube.navigation.graphs.addWelcomeGraph
 import red.tetrakube.redcube.ui.splash.SplashScreen
 import red.tetrakube.redcube.ui.splash.SplashViewModel
@@ -79,6 +80,10 @@ fun RedCubeShell() {
                 )
             }
             addWelcomeGraph(
+                modifier = Modifier,
+                navController = navController
+            )
+            addMainGraph(
                 modifier = Modifier,
                 navController = navController
             )

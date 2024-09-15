@@ -49,6 +49,13 @@ fun SplashScreen(
                     inclusive = true
                 }
             }
+        } else {
+            navController.navigate(route = Routes.IoT) {
+                launchSingleTop = true
+                popUpTo<Routes.Splash> {
+                    inclusive = true
+                }
+            }
         }
     }
 
