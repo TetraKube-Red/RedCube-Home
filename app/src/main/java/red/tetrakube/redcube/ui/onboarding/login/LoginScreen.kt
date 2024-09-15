@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -53,6 +54,8 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import red.tetrakube.redcube.R
+import red.tetrakube.redcube.domain.models.MinimalActiveHub
+import red.tetrakube.redcube.domain.models.UseCasesErrors
 import red.tetrakube.redcube.domain.usecase.barcode.BarcodeAnalyzer
 import red.tetrakube.redcube.ui.onboarding.login.models.LoginScreenState
 import red.tetrakube.redcube.ui.onboarding.login.models.LoginTargetContent
@@ -74,8 +77,12 @@ fun LoginScreen(
                 LoginTargetContent.CAMERA_SCANNER
             } else if (loginScreenState.value is LoginScreenState.Loading) {
                 LoginTargetContent.LOADER
+            } else if (loginScreenState.value is LoginScreenState.Finished) {
+                LoginTargetContent.SUCCESS
+            } else if (loginScreenState.value is LoginScreenState.FinishedWithError) {
+                LoginTargetContent.ERROR
             } else {
-                LoginTargetContent.LOADER
+                LoginTargetContent.ERROR
             }
         }
     }
@@ -88,6 +95,8 @@ fun LoginScreen(
         modifier = modifier,
         targetContent = targetContent,
         cameraPermission = cameraPermissionState.status,
+        loginScreenState = loginViewModel.loginScreenState.value,
+        resetLoginStatus = loginViewModel::resetLoginStatus,
         onQRCodeDetection = loginViewModel::handleHubEnrollment
     )
 }
@@ -98,6 +107,8 @@ fun LoginScreenUI(
     modifier: Modifier,
     targetContent: State<LoginTargetContent>,
     cameraPermission: PermissionStatus,
+    loginScreenState: LoginScreenState,
+    resetLoginStatus: () -> Unit,
     onQRCodeDetection: (String) -> Unit
 ) {
     val density = LocalDensity.current
@@ -156,6 +167,129 @@ fun LoginScreenUI(
             ) {
                 LoaderCard()
             }
+            if (targetContent.value == LoginTargetContent.SUCCESS) {
+                AnimatedVisibility(
+                    visible = targetContent.value == LoginTargetContent.SUCCESS,
+                    enter = slideInVertically {
+                        with(density) { -40.dp.roundToPx() }
+                    } + expandVertically(
+                        expandFrom = Alignment.Top
+                    ) + fadeIn(
+                        initialAlpha = 0.3f
+                    ),
+                    exit = slideOutVertically() + shrinkVertically() + fadeOut()
+                ) {
+                    val minimalHubIfo = (loginScreenState as LoginScreenState.Finished).activeHub
+                    HubInfoViewerCard(minimalHubIfo)
+                }
+            }
+            if (targetContent.value == LoginTargetContent.ERROR) {
+                AnimatedVisibility(
+                    visible = targetContent.value == LoginTargetContent.ERROR,
+                    enter = slideInVertically {
+                        with(density) { -40.dp.roundToPx() }
+                    } + expandVertically(
+                        expandFrom = Alignment.Top
+                    ) + fadeIn(
+                        initialAlpha = 0.3f
+                    ),
+                    exit = slideOutVertically() + shrinkVertically() + fadeOut()
+                ) {
+                    val useCasesErrors =
+                        (loginScreenState as LoginScreenState.FinishedWithError).useCasesErrors
+                    HubEnrollmentError(useCasesErrors, resetLoginStatus)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun HubEnrollmentError(useCasesErrors: UseCasesErrors, resetLoginStatus: () -> Unit) {
+    ElevatedCard(
+        colors = CardDefaults.elevatedCardColors()
+            .copy(
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer
+            ),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(Modifier.padding(8.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(modifier = Modifier) {
+                    Icon(
+                        painter = painterResource(R.drawable.device_hub_24px),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        "Hub login error",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+                Icon(
+                    painter = painterResource(R.drawable.close_24px),
+                    contentDescription = null,
+                    tint = Color.Magenta
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+            Text(
+                "There was an error of type $useCasesErrors during login process"
+            )
+            Spacer(Modifier.height(16.dp))
+            ElevatedButton(
+                onClick = resetLoginStatus
+            ) {
+                Text("Try again")
+            }
+        }
+    }
+}
+
+@Composable
+fun HubInfoViewerCard(minimalHubIfo: MinimalActiveHub?) {
+    ElevatedCard(
+        colors = CardDefaults.elevatedCardColors()
+            .copy(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(Modifier.padding(8.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(modifier = Modifier) {
+                    Icon(
+                        painter = painterResource(R.drawable.device_hub_24px),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        "Hub login success",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+                Icon(
+                    painter = painterResource(R.drawable.check_24px),
+                    contentDescription = null,
+                    tint = Color.Magenta
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+            Text(
+                "The hub ${minimalHubIfo?.name ?: "null"} is enrolled successfully"
+            )
         }
     }
 }

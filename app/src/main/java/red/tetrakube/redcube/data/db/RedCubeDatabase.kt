@@ -1,11 +1,11 @@
-package red.tetrakube.redcube.data.datasource.db
+package red.tetrakube.redcube.data.db
 
 import android.util.Log
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
-import red.tetrakube.redcube.data.datasource.db.entities.HubConnectivityEmbedded
-import red.tetrakube.redcube.data.datasource.db.entities.HubEntity
-import red.tetrakube.redcube.data.datasource.db.entities.RoomEmbedded
+import red.tetrakube.redcube.data.db.entities.HubConnectivityEmbedded
+import red.tetrakube.redcube.data.db.entities.HubEntity
+import red.tetrakube.redcube.data.db.entities.RoomEmbedded
 
 class RedCubeDatabase {
 

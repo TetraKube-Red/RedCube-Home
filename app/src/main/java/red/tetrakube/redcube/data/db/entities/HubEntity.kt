@@ -1,4 +1,4 @@
-package red.tetrakube.redcube.data.datasource.db.entities
+package red.tetrakube.redcube.data.db.entities
 
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList

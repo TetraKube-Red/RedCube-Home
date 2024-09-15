@@ -1,6 +1,6 @@
 package red.tetrakube.redcube.domain.mappers
 
-import red.tetrakube.redcube.data.datasource.db.entities.HubEntity
+import red.tetrakube.redcube.data.db.entities.HubEntity
 import red.tetrakube.redcube.domain.models.MinimalActiveHub
 
 fun HubEntity.toMinimalActiveHub(): MinimalActiveHub? {

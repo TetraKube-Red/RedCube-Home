@@ -4,5 +4,6 @@ enum class LoginTargetContent {
     PERMISSION_CARD,
     CAMERA_SCANNER,
     LOADER,
-    SUCCESS
+    SUCCESS,
+    ERROR
 }
