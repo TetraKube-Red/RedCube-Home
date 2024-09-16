@@ -2,8 +2,9 @@ package red.tetrakube.redcube.data.db.datasource
 
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.firstOrNull
+import io.realm.kotlin.notifications.ResultsChange
+import io.realm.kotlin.notifications.UpdatedResults
+import kotlinx.coroutines.flow.flow
 import red.tetrakube.redcube.data.api.dto.hub.HubInfo
 import red.tetrakube.redcube.data.api.mappers.toEntity
 import red.tetrakube.redcube.data.db.entities.HubEntity
@@ -19,10 +20,19 @@ class HubDataSource(
             .find()
             .firstOrNull()
 
-    fun streamActiveHub() {
-        val activeHub = redCubeDB.query(HubEntity::class, "active = true")
-            .
-
+    suspend fun streamActiveHub() = flow {
+        redCubeDB.query(HubEntity::class, "active = true")
+            .asFlow()
+            .collect { changes: ResultsChange<HubEntity> ->
+                when (changes) {
+                    is UpdatedResults -> {
+                        if (changes.list.size == 1) {
+                            emit(changes.list.first())
+                        }
+                    }
+                    else -> {}
+                }
+            }
     }
 
     fun getActiveHubConnectivityInfo() {

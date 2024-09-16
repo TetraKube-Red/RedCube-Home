@@ -1,4 +1,4 @@
-package red.tetrakube.redcube.domain.usecase.barcode
+package red.tetrakube.redcube.core
 
 import android.util.Log
 import androidx.annotation.OptIn

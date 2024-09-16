@@ -56,7 +56,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import red.tetrakube.redcube.R
 import red.tetrakube.redcube.domain.models.MinimalActiveHub
 import red.tetrakube.redcube.domain.models.UseCasesErrors
-import red.tetrakube.redcube.domain.usecase.barcode.BarcodeAnalyzer
+import red.tetrakube.redcube.core.BarcodeAnalyzer
 import red.tetrakube.redcube.navigation.Routes
 import red.tetrakube.redcube.ui.onboarding.login.models.LoginScreenState
 import red.tetrakube.redcube.ui.onboarding.login.models.LoginTargetContent
