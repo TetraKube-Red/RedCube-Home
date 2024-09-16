@@ -23,7 +23,7 @@ class IoTViewModel(
         _screenState.value = IoTScreenState.LoadingHub
         streamMinimalActiveHub.invoke()
             .collect {
-                it?.let {
+                it.let {
                     _screenState.value = IoTScreenState.HubLoaded(it)
                 }
             }
@@ -33,7 +33,8 @@ class IoTViewModel(
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val appContainer = (this[APPLICATION_KEY] as RedCubeApplication).appContainer
-                val streamMinimalActiveHub = StreamMinimalActiveHub(appContainer.hubDataSource)
+                val streamMinimalActiveHub =
+                    StreamMinimalActiveHub(appContainer.redCubeDatabase.hubRepository())
                 IoTViewModel(
                     streamMinimalActiveHub
                 )

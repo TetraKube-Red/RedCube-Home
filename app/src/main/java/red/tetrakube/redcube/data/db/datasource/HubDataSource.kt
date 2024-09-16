@@ -1,56 +1,22 @@
 package red.tetrakube.redcube.data.db.datasource
 
-import io.realm.kotlin.Realm
-import io.realm.kotlin.ext.query
-import io.realm.kotlin.notifications.ResultsChange
-import io.realm.kotlin.notifications.UpdatedResults
-import kotlinx.coroutines.flow.flow
-import red.tetrakube.redcube.data.api.dto.hub.HubInfo
-import red.tetrakube.redcube.data.api.mappers.toEntity
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 import red.tetrakube.redcube.data.db.entities.HubEntity
-import red.tetrakube.redcube.domain.mappers.toMinimalActiveHub
-import red.tetrakube.redcube.domain.models.MinimalActiveHub
 
-class HubDataSource(
-    private val redCubeDB: Realm
-) {
+@Dao
+interface HubDao {
 
-    fun getActiveHub() =
-        redCubeDB.query(HubEntity::class, "active = true")
-            .find()
-            .firstOrNull()
+    @Query("SELECT * FROM hubs WHERE active = true LIMIT 1")
+    suspend fun getActiveHub(): HubEntity?
 
-    suspend fun streamActiveHub() = flow {
-        redCubeDB.query(HubEntity::class, "active = true")
-            .asFlow()
-            .collect { changes: ResultsChange<HubEntity> ->
-                when (changes) {
-                    is UpdatedResults -> {
-                        if (changes.list.size == 1) {
-                            emit(changes.list.first())
-                        }
-                    }
-                    else -> {}
-                }
-            }
-    }
+    @Query("SELECT * FROM hubs WHERE active = true LIMIT 1")
+    fun streamActiveHub(): Flow<HubEntity>
 
-    fun getActiveHubConnectivityInfo() {
-        redCubeDB.query<HubEntity>("active = true")
-    }
-
-    suspend fun storeHub(
-        hubInfo: HubInfo,
-        setAsDefault: Boolean = true,
-        apiURI: String,
-        websocketURI: String,
-        token: String
-    ): MinimalActiveHub? {
-        return redCubeDB.write {
-            val hub = hubInfo.toEntity(setAsDefault, apiURI, websocketURI, token)
-            copyToRealm(hub)
-        }
-            .toMinimalActiveHub()
-    }
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(hub: HubEntity): Long
 
 }

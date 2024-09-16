@@ -55,7 +55,7 @@ class LoginViewModel(
             initializer {
                 val appContainer = (this[APPLICATION_KEY] as RedCubeApplication).appContainer
                 val retrieveHubInfoFromAPI = RetrieveHubInfoFromAPI(
-                    appContainer.hubDataSource,
+                    appContainer.redCubeDatabase.hubRepository(),
                     appContainer.hubAPI
                 )
                 LoginViewModel(

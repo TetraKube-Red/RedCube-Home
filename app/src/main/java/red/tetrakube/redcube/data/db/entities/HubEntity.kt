@@ -1,19 +1,29 @@
 package red.tetrakube.redcube.data.db.entities
 
-import io.realm.kotlin.ext.realmListOf
-import io.realm.kotlin.types.RealmList
-import io.realm.kotlin.types.RealmObject
-import io.realm.kotlin.types.annotations.PrimaryKey
-import org.mongodb.kbson.ObjectId
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-class HubEntity : RealmObject {
-
+@Entity(tableName = "hubs")
+class HubEntity(
     @PrimaryKey
-    var _id: ObjectId = ObjectId()
-    var slug: String = ""
-    var name: String = ""
-    var active: Boolean = false
-    var connectivity: HubConnectivityEmbedded? = null
-    var rooms: RealmList<RoomEmbedded> = realmListOf()
+    var id: Long?,
 
-}
+    @ColumnInfo(name = "slug")
+    val slug: String = "",
+
+    @ColumnInfo(name = "name")
+    var name: String = "",
+
+    @ColumnInfo(name = "active")
+    var active: Boolean = false,
+
+    @ColumnInfo(name = "token")
+    var token: String = "",
+
+    @ColumnInfo(name = "api_uri")
+    var apiURI: String = "",
+
+    @ColumnInfo(name = "websocket_uri")
+    var websocketURI: String = ""
+)

@@ -2,7 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization.plugin)
-    alias(libs.plugins.realm.plugin)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 android {
@@ -51,9 +53,13 @@ android {
     }
 }
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
 dependencies {
-    implementation(libs.realm)
-    implementation(libs.realm.coroutines)
+    ksp(libs.room.compiler)
+    implementation(libs.room.kotlin)
 
     implementation(libs.accompanist.permissions)
     implementation(libs.androidx.camera.camera2)

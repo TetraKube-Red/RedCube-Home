@@ -1,12 +1,12 @@
 package red.tetrakube.redcube.domain.usecase.hub
 
-import red.tetrakube.redcube.data.db.datasource.HubDataSource
+import red.tetrakube.redcube.data.db.datasource.HubDao
 
 class IsThereActiveHub(
-    private val hubDataSource: HubDataSource
+    private val hubDataSource: HubDao
 ) {
 
-    operator fun invoke(): Boolean =
+    suspend operator fun invoke(): Boolean =
         hubDataSource.getActiveHub() != null
 
 }

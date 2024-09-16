@@ -121,7 +121,7 @@ fun IoTScreenUI(
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
             if (screenState is IoTScreenState.LoadingHub) {
-                LinearProgressIndicator()
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
             TabRow(
                 selectedTabIndex = pagerState.currentPage,

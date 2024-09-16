@@ -4,5 +4,5 @@ import android.app.Application
 import red.tetrakube.redcube.core.RedCubeContainer
 
 class RedCubeApplication : Application() {
-    val appContainer = RedCubeContainer()
+    val appContainer = RedCubeContainer(this)
 }

@@ -1,23 +1,23 @@
 [versions]
 agp = "8.6.0"
-kotlin = "1.9.0"
+kotlin = "2.0.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.5"
 activityCompose = "1.9.2"
-composeBom = "2024.09.00"
-uiTextGoogleFonts = "1.7.0"
-accompanistPermissions = "0.34.0"
+composeBom = "2024.09.01"
+uiTextGoogleFonts = "1.7.1"
+accompanistPermissions = "0.36.0"
 barcodeScanning = "17.3.0"
-cameraView = "1.3.4"
+cameraView = "1.4.0-rc01"
 ktorVersion = "2.3.12"
 navigationCompose = "2.8.0"
 kotlinSerialization = "1.8.21"
-firebaseBom = "33.2.0"
-realm = "1.16.0"
-realm-coroutines = "1.7.0"
+firebaseBom = "33.3.0"
+ksp-plugin = "2.0.0-1.0.21"
+room = "2.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,12 +50,13 @@ ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.re
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorVersion" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging-ktx" }
-realm = { module = "io.realm.kotlin:library-base", version.ref = "realm" }
-realm-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "realm-coroutines" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-kotlin = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization-plugin = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization" }
-realm-plugin = { id = "io.realm.kotlin", version.ref = "realm" }
-
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-plugin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+room = { id = "androidx.room", version.ref = "room" }

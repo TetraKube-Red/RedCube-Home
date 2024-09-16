@@ -30,7 +30,7 @@ class SplashViewModel(private val getMinimalActiveHub: GetMinimalActiveHub) : Vi
             initializer {
                 val appContainer = (this[APPLICATION_KEY] as RedCubeApplication).appContainer
                 val getMinimalActiveHub = GetMinimalActiveHub(
-                    hubDataSource = appContainer.hubDataSource
+                    hubDataSource = appContainer.redCubeDatabase.hubRepository()
                 )
 
                 SplashViewModel(
